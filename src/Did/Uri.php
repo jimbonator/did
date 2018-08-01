@@ -7,7 +7,7 @@ use Did\Exception;
 /**
  *
  */
-class Uri {
+class Uri extends Serializable {
   /**
    * DID prefix.
    *
@@ -82,9 +82,9 @@ class Uri {
   }
 
   /**
-   * @return string
+   * @inheritDoc
    */
-  public function encode() {
+  public function toSerialize() {
     return sprintf('%s:%s:%s',
       static::PREFIX,
       $this->method,
@@ -93,9 +93,9 @@ class Uri {
   }
 
   /**
-   * @return string
+   * @inheritDoc
    */
   public function __toString() {
-    return $this->encode();
+    return $this->toSerialize();
   }
 }
