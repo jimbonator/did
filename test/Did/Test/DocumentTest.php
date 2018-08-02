@@ -13,7 +13,7 @@ use Did\Uri;
 /**
  *
  */
-class DocumentTest extends DidTest {
+class DocumentTest extends TestCase {
   private $uri;
 
   protected function setUp() {

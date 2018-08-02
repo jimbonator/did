@@ -11,7 +11,7 @@ use Did\Timestamp;
 /**
  *
  */
-class TimestampTest extends DidTest {
+class TimestampTest extends TestCase {
   public function testDefaultCtor() {
     $ts = new Timestamp();
 

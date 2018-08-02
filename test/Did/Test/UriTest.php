@@ -11,7 +11,7 @@ use Did\Uri;
 /**
  *
  */
-class UriTest extends DidTest {
+class UriTest extends TestCase {
   /**
    * @dataProvider provideIsNotDid
    */
