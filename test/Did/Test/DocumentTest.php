@@ -58,6 +58,14 @@ class DocumentTest extends DidTest {
     $this->assertSame($doc->get('blockchain'), 'deadbeef');
   }
 
+  public function testSetClear() {
+    $doc = new Document($this->uri);
+    $doc->set('blockchain', 'deadbeef');
+    $doc->set('blockchain', null);
+
+    $this->assertFalse(isset($doc['blockchain']));
+  }
+
   public function testClear() {
     $doc = new Document($this->uri);
     $doc['blockchain'] = 'yes';
@@ -66,7 +74,7 @@ class DocumentTest extends DidTest {
     $this->assertTrue($doc->has('blockchain'));
     $this->assertTrue(isset($doc['profile']));
 
-    $doc->clear('blockchain');
+    $doc->remove('blockchain');
     $this->assertFalse(isset($doc['blockchain']));
 
     unset($doc['profile']);
