@@ -2,7 +2,8 @@
 
 namespace Did;
 
-use Did\Exception;
+use Did\Exception\EncodingException;
+use Did\Util\Args;
 
 /**
  *
@@ -55,7 +56,7 @@ class Uri extends Serializable {
   public static function parse(string $uri) {
     $matches = [];
     if (preg_match(static::REGEX, $uri, $matches) == 0)
-      throw new Exception\EncodingException("Not a valid DID URI: \"$uri\"");
+      throw new EncodingException("Not a valid DID URI: \"$uri\"");
 
     return new static($matches[1], $matches[2]);
   }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Did;
+namespace Did\Util;
 
 /**
  *
@@ -34,7 +34,7 @@ class Mixed {
    *
    */
   public static function reqNonempty($mixed) {
-    static::req('\Did\Mixed::isNonempty', $mixed);
+    static::req('\Did\Util\Mixed::isNonempty', $mixed);
   }
 
   /**

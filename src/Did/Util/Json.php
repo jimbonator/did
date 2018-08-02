@@ -1,6 +1,6 @@
 <?php
 
-namespace Did;
+namespace Did\Util;
 
 use Did\Exception\JsonEncodingException;
 

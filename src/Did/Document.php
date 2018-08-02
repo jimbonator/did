@@ -2,6 +2,8 @@
 
 namespace Did;
 
+use Did\Util\Args;
+
 /**
  *
  */
