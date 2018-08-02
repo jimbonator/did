@@ -6,6 +6,7 @@ require_once 'vendor/autoload.php';
 require_once 'src/Did/Autoloader.php';
 \Did\Autoloader::register();
 
+use Did\Authentication;
 use Did\Document;
 use Did\PublicKey;
 use Did\PublicKeyValue;
@@ -139,6 +140,34 @@ class DocumentTest extends TestCase {
     );
 
     return [
+      'null' =>           [ null ],
+      'empty' =>          [ [] ],
+      'single' =>         [ $one ],
+      'multiple' =>       [ [ $one, $two ] ],
+    ];
+  }
+
+  /**
+   * @dataProvider provideAuthentication
+   */
+  public function testAuthentication($authn) {
+    $doc = new Document($this->uri);
+    $this->assertNull($doc->authentication());
+
+    $doc->setAuthentication($authn);
+
+    if (isset($authn) && !empty($authn))
+      $this->assertSame((array) $authn, $doc->authentication());
+    else
+      $this->assertNull($doc->authentication());
+  }
+
+  public function provideAuthentication() {
+    $one = new Authentication('FakeSigOne', $this->uri);
+    $two = new Authentication('FakeSigTwo', $this->uri);
+
+    return [
+      'null' =>           [ null ],
       'empty' =>          [ [] ],
       'single' =>         [ $one ],
       'multiple' =>       [ [ $one, $two ] ],

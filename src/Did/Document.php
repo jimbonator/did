@@ -61,7 +61,7 @@ class Document extends AbstractMap {
   }
 
   /**
-   * @return array[\Did\PublicKey]
+   * @return array[\Did\PublicKey]|null
    */
   public function publicKey() {
     return $this->get('publicKey');
@@ -73,6 +73,26 @@ class Document extends AbstractMap {
   public function setPublicKey($pks) {
     Args::requires(is_a($pks, PublicKey::class) || is_array($pks) || is_null($pks));
 
+    $pks = !Args::isEmpty($pks) ? (array) $pks : null;
+
     $this->set('publicKey', $pks);
+  }
+
+  /**
+   * @return array[\Did\Authentication]|null
+   */
+  public function authentication() {
+    return $this->get('authentication');
+  }
+
+  /**
+   * @param \Did\Authentication|array[\Did\Authentication]|null $authn
+   */
+  public function setAuthentication($authn) {
+    Args::requires(is_a($authn, \Did\Authentication::class) || is_array($authn) || is_null($authn));
+
+    $authn = !Args::isEmpty($authn) ? (array) $authn : null;
+
+    $this->set('authentication', $authn);
   }
 }

@@ -34,7 +34,7 @@ class Mixed {
    *
    */
   public static function reqNonempty($mixed) {
-    static::req('\Did\Util\Mixed::isNonempty', $mixed);
+    return static::req('\Did\Util\Mixed::isNonempty', $mixed);
   }
 
   /**
@@ -43,6 +43,15 @@ class Mixed {
   public static function requires($bool) {
     if (!$bool)
       static::throw();
+
+    return $bool;
+  }
+
+  /**
+   *
+   */
+  public static function optNonempty($mixed) {
+    return static::opt('\Did\Util\Mixed::isNonempty', $mixed);
   }
 
   /**
@@ -51,6 +60,18 @@ class Mixed {
   protected static function req($test, $mixed) {
     if (!$test($mixed))
       static::throw();
+
+    return $mixed;
+  }
+
+  /**
+   *
+   */
+  protected static function opt($test, $mixed) {
+    if (!is_null($mixed) && !$test($mixed))
+      static::throw();
+
+    return $mixed;
   }
 
   /**
