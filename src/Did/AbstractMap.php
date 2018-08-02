@@ -26,10 +26,10 @@ abstract class AbstractMap extends Serializable implements \ArrayAccess {
 
   /**
    * @param string $key
-   * @param string|\Did\Serializable|null $val
+   * @param string|array|\Did\Serializable|null $val
    */
   public function set(string $key, $val) {
-    Args::requires(is_string($val) || is_a($val, Serializable::class) || is_null($val));
+    Args::requires(is_string($val) || is_array($val) || is_a($val, Serializable::class) || is_null($val));
 
     if (isset($val))
       $this->map[$key] = $val;

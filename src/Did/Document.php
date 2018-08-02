@@ -59,4 +59,20 @@ class Document extends AbstractMap {
   public function setUpdated(Timestamp $ts = null) {
     $this->set('updated', $ts ?? new Timestamp());
   }
+
+  /**
+   * @return array[\Did\PublicKey]
+   */
+  public function publicKey() {
+    return $this->get('publicKey');
+  }
+
+  /**
+   * @param \Did\PublicKey|array[\Did\PublicKey]|null
+   */
+  public function setPublicKey($pks) {
+    Args::requires(is_a($pks, PublicKey::class) || is_array($pks) || is_null($pks));
+
+    $this->set('publicKey', $pks);
+  }
 }

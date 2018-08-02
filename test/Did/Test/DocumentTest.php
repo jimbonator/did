@@ -7,8 +7,11 @@ require_once 'src/Did/Autoloader.php';
 \Did\Autoloader::register();
 
 use Did\Document;
+use Did\PublicKey;
+use Did\PublicKeyValue;
 use Did\Timestamp;
 use Did\Uri;
+use Did\Util\Json;
 
 /**
  *
@@ -104,6 +107,41 @@ class DocumentTest extends TestCase {
     return [
       'created' =>  [ 'created' ],
       'updated' =>  [ 'updated' ],
+    ];
+  }
+
+  /**
+   * @dataProvider providePublicKey
+   */
+  public function testPublicKey($pks) {
+    $doc = new Document($this->uri);
+    $this->assertNull($doc->publicKey());
+
+    $doc->setPublicKey($pks);
+
+    if (isset($pks) && !empty($pks))
+      $this->assertSame((array) $pks, $doc->publicKey());
+    else
+      $this->assertNull($doc->publicKey());
+  }
+
+  public function providePublicKey() {
+    $one = new PublicKey(
+      new Uri('method', 'deadbeef'),
+      'FakeSigA',
+      new PublicKeyValue(PublicKeyValue::PK_PEM, 'deadbeef')
+    );
+
+    $two = new PublicKey(
+      new Uri('method', 'deadbeef'),
+      'FakeSigB',
+      new PublicKeyValue(PublicKeyValue::PK_HEX, 'deadbeef')
+    );
+
+    return [
+      'empty' =>          [ [] ],
+      'single' =>         [ $one ],
+      'multiple' =>       [ [ $one, $two ] ],
     ];
   }
 }
