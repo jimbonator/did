@@ -19,16 +19,10 @@
 
 namespace Did\Test;
 
-use Did\PublicKeyValue;
-
 /**
- *
+ * TestCase bootstrap.
  */
-class PublicKeyValueTest extends TestCase {
-  public function testCreate() {
-    $pkv = new PublicKeyValue(PublicKeyValue::PK_PEM, 'deadbeef');
 
-    $this->assertSame(PublicKeyValue::PK_PEM, $pkv->name());
-    $this->assertSame('deadbeef', $pkv->value());
-  }
-}
+require_once 'vendor/autoload.php';
+require_once 'src/Did/Autoloader.php';
+\Did\Autoloader::register();
