@@ -21,40 +21,61 @@ namespace Did;
 
 use Did\Exception\EncodingException;
 use Did\Util\Args;
+use Did\Util\Str;
 
 /**
  *
  */
 class Uri extends Serializable {
   /**
-   * DID prefix.
+   * DID scheme.
    *
    * @var string
    */
-  const PREFIX = 'did';
+  const SCHEME = 'did';
+
+  /**
+   * Path delimiter.
+   *
+   * @var string
+   */
+  const PATH_DELIM = '/';
 
   /**
    * Regular expression for decoding DID.
    *
    * @var string
-   * @todo did-path, did-fragment, full idstring
+   * @todo did-fragment, full idstring
    */
-  const REGEX = '/^did:([a-z]+):([A-Za-z0-9.-]+)$/';
+  const REGEX = '<^did:([a-z]+):([A-Za-z0-9.-]+)(/?[A-Za-z0-9/:._%@;=]*)$>';
 
   private $method;
   private $ids;
+  private $path;
 
   /**
    * @param string $method
    * @param string|array $ids
+   * @param string $path
    */
-  public function __construct(string $method, $ids) {
+  public function __construct(string $method, $ids, string $path = null) {
     Args::reqNonempty($method);
     Args::reqNonempty($ids);
     Args::requires(is_string($ids) || is_array($ids));
 
+    // fixup path ... empty string and '/' => NULL, otherwise ensure path starts with delimiter
+    if (Args::isEmpty($path) || ($path === static::PATH_DELIM))
+      $path = null;
+    elseif (!Str::hasPrefix($path, static::PATH_DELIM))
+      $path = statix::PATH_DELIM . $path;
+
+    // trim trailing delimiter
+    if (Args::isNonempty($path))
+      $path = rtrim($path, static::PATH_DELIM);
+
     $this->method = $method;
     $this->ids = (array) $ids;
+    $this->path = $path;
   }
 
   /**
@@ -75,7 +96,7 @@ class Uri extends Serializable {
     if (preg_match(static::REGEX, $uri, $matches) == 0)
       throw new EncodingException("Not a valid DID URI: \"$uri\"");
 
-    return new static($matches[1], $matches[2]);
+    return new static($matches[1], $matches[2], $matches[3]);
   }
 
   /**
@@ -100,13 +121,28 @@ class Uri extends Serializable {
   }
 
   /**
+   * @return bool
+   */
+  public function hasPath() {
+    return isset($this->path);
+  }
+
+  /**
+   * @return string|null
+   */
+  public function path() {
+    return $this->path;
+  }
+
+  /**
    * @inheritDoc
    */
-  public function toSerialize() {
-    return sprintf('%s:%s:%s',
-      static::PREFIX,
+  protected function toSerialize() {
+    return sprintf('%s:%s:%s%s',
+      static::SCHEME,
       $this->method,
-      implode(':', $this->ids)
+      implode(':', $this->ids),
+      $this->hasPath() ? $this->path : ''
     );
   }
 

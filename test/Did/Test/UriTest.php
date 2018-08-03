@@ -54,28 +54,46 @@ class UriTest extends TestCase {
     $this->assertTrue($result);
   }
 
+  /**
+   * @dataProvider provideIsDid
+   */
+  public function testParse($did, $normalized, $method, $ids, $path = null) {
+    $uri = Uri::parse($did);
+
+    $this->assertSame($normalized ?? $did, $uri->encode());
+    $this->assertSame($method, $uri->method());
+    $this->assertSame($ids, $uri->primaryId());
+    $this->assertSame($path, $uri->path());
+  }
+
   public function provideIsDid() {
     return [
-      'base' =>                   [ 'did:method:deadbeef' ],
-      'base-upper-id' =>          [ 'did:method:DEADBEEF' ],
-      'base-mixed-id' =>          [ 'did:method:dEAdb33F' ],
-    ];
-  }
+      'base' =>
+        [ 'did:method:deadbeef', null, 'method', 'deadbeef' ],
 
-  /**
-   * @dataProvider provideParse
-   */
-  public function testParse($did) {
-    $uri = Uri::parse($did);
-    $encoded = $uri->encode();
+      'base-upper-id' =>
+        [ 'did:method:DEADBEEF', null, 'method', 'DEADBEEF' ],
 
-    $this->assertSame($did, $encoded);
-  }
+      'base-mixed-id' =>
+        [ 'did:method:dEAdb33F', null, 'method', 'dEAdb33F' ],
 
-  public function provideParse() {
-    return [
-      'base' =>                   [ 'did:method:deadbeef' ],
-      'base-mixed' =>             [ 'did:method:DeaDb33F' ],
+      'empty-path' =>
+        [ 'did:method:deadbeef/', 'did:method:deadbeef', 'method', 'deadbeef' ],
+
+      'one-deep-path' =>
+        [ 'did:method:deadbeef/abc', null, 'method', 'deadbeef', '/abc' ],
+
+      'one-deep-path-trailing' =>
+        [ 'did:method:deadbeef/abc/', 'did:method:deadbeef/abc', 'method', 'deadbeef', '/abc' ],
+
+      'two-deep-path' =>
+        [ 'did:method:deadbeef/abc/def/', 'did:method:deadbeef/abc/def', 'method', 'deadbeef', '/abc/def' ],
+
+      'mixed-path' =>
+        [ 'did:method:deadbeef/Camel/Case', null, 'method', 'deadbeef', '/Camel/Case' ],
+
+      'pct-encoding' =>
+        [ 'did:method:deadbeef/%3F%20%3E', null, 'method', 'deadbeef', '/%3F%20%3E' ],
     ];
   }
 }
