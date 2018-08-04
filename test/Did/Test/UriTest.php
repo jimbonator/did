@@ -57,13 +57,14 @@ class UriTest extends TestCase {
   /**
    * @dataProvider provideIsDid
    */
-  public function testParse($did, $normalized, $method, $ids, $path = null) {
+  public function testParse($did, $normalized, $method, $ids, $path = null, $fragment = null) {
     $uri = Uri::parse($did);
 
     $this->assertSame($normalized ?? $did, $uri->encode());
     $this->assertSame($method, $uri->method());
     $this->assertSame($ids, $uri->primaryId());
     $this->assertSame($path, $uri->path());
+    $this->assertSame($fragment, $uri->fragment());
   }
 
   public function provideIsDid() {
@@ -94,6 +95,18 @@ class UriTest extends TestCase {
 
       'pct-encoding' =>
         [ 'did:method:deadbeef/%3F%20%3E', null, 'method', 'deadbeef', '/%3F%20%3E' ],
+
+      'fragment' =>
+        [ 'did:method:deadbeef#fragment', null, 'method', 'deadbeef', null, 'fragment' ],
+
+      'path-fragment' =>
+        [ 'did:method:deadbeef/abc#fragment', null, 'method', 'deadbeef', '/abc', 'fragment' ],
+
+      'empty-path-fragment' =>
+        [ 'did:method:deadbeef/#fragment', 'did:method:deadbeef#fragment', 'method', 'deadbeef', null, 'fragment' ],
+
+      'uuid-fragment' =>
+        [ 'did:method:deadbeef#0123-4567-89AB-CDEF', null, 'method', 'deadbeef', null, '0123-4567-89AB-CDEF' ],
     ];
   }
 }

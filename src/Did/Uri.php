@@ -39,43 +39,44 @@ class Uri extends Serializable {
    *
    * @var string
    */
-  const PATH_DELIM = '/';
+  const DELIM_PATH = '/';
+
+  /**
+   * Fragment delimiter.
+   *
+   * @var string
+   */
+  const DELIM_FRAGMENT = '#';
 
   /**
    * Regular expression for decoding DID.
    *
    * @var string
-   * @todo did-fragment, full idstring
+   * @todo full idstring
+   * @todo Better respect for appropriate ABNF of each portion of URI
    */
-  const REGEX = '<^did:([a-z]+):([A-Za-z0-9.-]+)(/?[A-Za-z0-9/:._%@;=]*)$>';
+  const REGEX = '<^did:([a-z]+):([A-Za-z0-9.-]+)(/?[A-Za-z0-9/:._%@;=]*)(#?[A-Za-z0-9-._~:@]*)?$>';
 
   private $method;
   private $ids;
   private $path;
+  private $fragment;
 
   /**
    * @param string $method
    * @param string|array $ids
-   * @param string $path
+   * @param string|null $path
+   * @param string|null $fragment
    */
-  public function __construct(string $method, $ids, string $path = null) {
+  public function __construct(string $method, $ids, string $path = null, $fragment = null) {
     Args::reqNonempty($method);
     Args::reqNonempty($ids);
     Args::requires(is_string($ids) || is_array($ids));
 
-    // fixup path ... empty string and '/' => NULL, otherwise ensure path starts with delimiter
-    if (Args::isEmpty($path) || ($path === static::PATH_DELIM))
-      $path = null;
-    elseif (!Str::hasPrefix($path, static::PATH_DELIM))
-      $path = statix::PATH_DELIM . $path;
-
-    // trim trailing delimiter
-    if (Args::isNonempty($path))
-      $path = rtrim($path, static::PATH_DELIM);
-
     $this->method = $method;
     $this->ids = (array) $ids;
-    $this->path = $path;
+    $this->path = static::normalizePath($path);
+    $this->fragment = static::normalizeFragment($fragment);
   }
 
   /**
@@ -96,7 +97,7 @@ class Uri extends Serializable {
     if (preg_match(static::REGEX, $uri, $matches) == 0)
       throw new EncodingException("Not a valid DID URI: \"$uri\"");
 
-    return new static($matches[1], $matches[2], $matches[3]);
+    return new static($matches[1], $matches[2], $matches[3], $matches[4]);
   }
 
   /**
@@ -135,14 +136,29 @@ class Uri extends Serializable {
   }
 
   /**
+   * @return bool
+   */
+  public function hasFragment() {
+    return isset($this->fragment);
+  }
+
+  /**
+   * @return string|null
+   */
+  public function fragment() {
+    return $this->fragment;
+  }
+
+  /**
    * @inheritDoc
    */
   protected function toSerialize() {
-    return sprintf('%s:%s:%s%s',
+    return sprintf('%s:%s:%s%s%s',
       static::SCHEME,
       $this->method,
       implode(':', $this->ids),
-      $this->hasPath() ? $this->path : ''
+      $this->hasPath() ? $this->path : '',
+      $this->hasFragment() ? (static::DELIM_FRAGMENT . $this->fragment) : ''
     );
   }
 
@@ -151,5 +167,44 @@ class Uri extends Serializable {
    */
   public function __toString() {
     return $this->toSerialize();
+  }
+
+  /**
+   * @param string|null $fragment
+   * @return string|null
+   */
+  private static function normalizePath($path) {
+    Args::optString($path);
+
+    // empty string and '/' => NULL
+    if (Args::isEmpty($path) || ($path === static::DELIM_PATH))
+      return null;
+
+    // ensure path starts with delimiter
+    if (!Str::hasPrefix($path, static::DELIM_PATH))
+      $path = static::DELIM_PATH . $path;
+
+    // trim trailing delimiter
+    if (Args::isNonempty($path))
+      $path = rtrim($path, static::DELIM_PATH);
+
+    return $path;
+  }
+
+  /**
+   * @param string $fragment
+   * @return string|null
+   */
+  private static function normalizeFragment($fragment) {
+    Args::optString($fragment);
+
+    // empty string and '#' => null
+    if (Args::isEmpty($fragment) || ($fragment === static::DELIM_FRAGMENT))
+      return null;
+
+    // trim leading delimiter
+    $fragment = ltrim($fragment, static::DELIM_FRAGMENT);
+
+    return $fragment;
   }
 }

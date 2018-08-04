@@ -57,6 +57,13 @@ class Mixed {
   /**
    *
    */
+  public static function reqString($mixed) {
+    return static::req('is_string', $mixed);
+  }
+
+  /**
+   *
+   */
   public static function requires($bool) {
     if (!$bool)
       static::throw();
@@ -69,6 +76,13 @@ class Mixed {
    */
   public static function optNonempty($mixed) {
     return static::opt('\Did\Util\Mixed::isNonempty', $mixed);
+  }
+
+  /**
+   *
+   */
+  public static function optString($mixed) {
+    return static::opt('is_string', $mixed);
   }
 
   /**
