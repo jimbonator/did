@@ -7,7 +7,7 @@
 
 Decentralized Identifiers (DIDs) are URIs for self-sovereign digital identification.  DIDs reference DID Documents, which are signed data structures containing public keys, authentication methods, service endpoints, and more.
 
-The most current specification is located at https://w3c-ccg.github.io/did-spec/
+The most current specification is located at <https://w3c-ccg.github.io/did-spec/>
 
 **Did** is the nascent beginning of a PHP library for encoding and decoding DID URIs and documents.  It's designed for PHP 7.
 
