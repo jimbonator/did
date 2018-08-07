@@ -34,6 +34,14 @@ class UriTest extends TestCase {
     $this->assertFalse($result);
   }
 
+  /**
+   * @dataProvider provideIsNotDid
+   * @expectedException \Did\Exception\EncodingException
+   */
+  public function testParseFailed($did) {
+    Uri::parse($did);
+  }
+
   public function provideIsNotDid() {
     return [
       'empty' =>                  [ '' ],
