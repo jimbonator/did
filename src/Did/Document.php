@@ -112,4 +112,22 @@ class Document extends AbstractMap {
 
     $this->set('authentication', $authn);
   }
+
+  /**
+   * @return array[\Did\Service]|null
+   */
+  public function service() {
+    return $this->get('service');
+  }
+
+  /**
+   * @param \Did\Service|array[\Did\Service]|null $service
+   */
+  public function setService(array $service) {
+    Args::requires(is_a($service, Service::class) || is_array($service) || is_null($service));
+
+    $service = !Args::isEmpty($service) ? (array) $service : null;
+
+    $this->set('service', $service);
+  }
 }
