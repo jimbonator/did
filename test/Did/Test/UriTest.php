@@ -113,6 +113,9 @@ class UriTest extends TestCase {
       'pct-encoding' =>
         [ 'did:method:deadbeef/%3F%20%3E', null, 'method', 'deadbeef', '/%3F%20%3E' ],
 
+      'strange-path' =>
+        [ 'did:method:deadbeef/;this.is!a+strange~*(path)', null, 'method', 'deadbeef', '/;this.is!a+strange~*(path)'],
+
       'fragment' =>
         [ 'did:method:deadbeef#fragment', null, 'method', 'deadbeef', null, 'fragment' ],
 
@@ -124,6 +127,9 @@ class UriTest extends TestCase {
 
       'uuid-fragment' =>
         [ 'did:method:deadbeef#0123-4567-89AB-CDEF', null, 'method', 'deadbeef', null, '0123-4567-89AB-CDEF' ],
+
+      'strange-fragment' =>
+        [ 'did:method:deadbeef/path;strange#a+strange~*)fragment(', null, 'method', 'deadbeef', '/path;strange', 'a+strange~*)fragment('],
 
       'base-multiple-ids' =>
         [ 'did:method:deadbeef:abcd1234', null, 'method', [ 'deadbeef', 'abcd1234' ] ],

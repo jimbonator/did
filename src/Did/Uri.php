@@ -52,9 +52,8 @@ class Uri extends Serializable {
    * Regular expression for decoding DID.
    *
    * @var string
-   * @todo Better respect for appropriate ABNF of each portion of URI
    */
-  const REGEX = '~^did:([a-z]+):([A-Za-z0-9:.-]+)(?<!:)(/[A-Za-z0-9:/._%@;=]*)?(#[A-Za-z0-9-._\~:@]*)?$~';
+  const REGEX = '~^did:([a-z]+):([A-Za-z0-9:.-]+)(?<!:)(/[A-Za-z0-9-._\~%!$&\'()*+,;=:@/]*)?(#[A-Za-z0-9-._\~%!$&\'()*+,;=:@/?]*)?$~';
 
   private $method;
   private $ids;
