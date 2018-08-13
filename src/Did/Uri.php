@@ -52,10 +52,9 @@ class Uri extends Serializable {
    * Regular expression for decoding DID.
    *
    * @var string
-   * @todo full idstring
    * @todo Better respect for appropriate ABNF of each portion of URI
    */
-  const REGEX = '<^did:([a-z]+):([A-Za-z0-9.-]+)(/?[A-Za-z0-9/:._%@;=]*)(#?[A-Za-z0-9-._~:@]*)?$>';
+  const REGEX = '~^did:([a-z]+):([A-Za-z0-9:.-]+)(?<!:)(/[A-Za-z0-9:/._%@;=]*)?(#[A-Za-z0-9-._\~:@]*)?$~';
 
   private $method;
   private $ids;
@@ -97,7 +96,8 @@ class Uri extends Serializable {
     if (preg_match(static::REGEX, $uri, $matches) == 0)
       throw new EncodingException("Not a valid DID URI: \"$uri\"");
 
-    return new static($matches[1], $matches[2], $matches[3], $matches[4]);
+    // $matches[2] is one or more colon-delimited ids, break into array for ctor
+    return new static($matches[1], explode(':', $matches[2]), $matches[3], $matches[4]);
   }
 
   /**

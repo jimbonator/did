@@ -44,12 +44,17 @@ class UriTest extends TestCase {
 
   public function provideIsNotDid() {
     return [
-      'empty' =>                  [ '' ],
-      'prefix' =>                 [ 'did:' ],
-      'prefix-method' =>          [ 'did:a' ],
-      'prefix-number' =>          [ 'did:1' ],
-      'bad-method' =>             [ 'did:123:deadbeef' ],
-      'base-no-method' =>         [ 'did::deadbeef' ],
+      'empty' =>                      [ '' ],
+      'prefix' =>                     [ 'did:' ],
+      'prefix-method' =>              [ 'did:a' ],
+      'prefix-number' =>              [ 'did:1' ],
+      'bad-method' =>                 [ 'did:123:deadbeef' ],
+      'base-no-method' =>             [ 'did::deadbeef' ],
+      'base-method-no-id-path' =>     [ 'did:method/path' ],
+      'base-method-no-id-path2' =>    [ 'did:method:/path' ],
+      'ids-trailing-colon' =>         [ 'did:method:deadbeef:abcd1234:' ],
+      'ids-trailing-colon-path' =>    [ 'did:method:deadbeef:abcd1234:/abc/def' ],
+      'path-no-opening-slash' =>      [ 'did:method:deadbeef%20%2F' ],
     ];
   }
 
@@ -70,7 +75,11 @@ class UriTest extends TestCase {
 
     $this->assertSame($normalized ?? $did, $uri->encode());
     $this->assertSame($method, $uri->method());
-    $this->assertSame($ids, $uri->primaryId());
+    if (is_string($ids))
+      $this->assertSame($ids, $uri->primaryId());
+    else
+      $this->assertSame($ids[0], $uri->primaryId());
+    $this->assertSame((array) $ids, $uri->ids());
     $this->assertSame($path, $uri->path());
     $this->assertSame($fragment, $uri->fragment());
   }
@@ -115,6 +124,21 @@ class UriTest extends TestCase {
 
       'uuid-fragment' =>
         [ 'did:method:deadbeef#0123-4567-89AB-CDEF', null, 'method', 'deadbeef', null, '0123-4567-89AB-CDEF' ],
+
+      'base-multiple-ids' =>
+        [ 'did:method:deadbeef:abcd1234', null, 'method', [ 'deadbeef', 'abcd1234' ] ],
+
+      'base-multiple-ids-empty-path' =>
+        [ 'did:method:deadbeef:abcd1234/', 'did:method:deadbeef:abcd1234', 'method', [ 'deadbeef', 'abcd1234' ] ],
+
+      'base-multiple-ids-path' =>
+        [ 'did:method:deadbeef:abcd1234:5c5c/def', null, 'method', [ 'deadbeef', 'abcd1234', '5c5c' ], '/def' ],
+
+      'base-multiple-ids-fragment' =>
+        [ 'did:method:deadbeef:abcd1234:5c5c#frag', null, 'method', [ 'deadbeef', 'abcd1234', '5c5c' ], null, 'frag' ],
+
+      'base-multiple-ids-path-fragment' =>
+        [ 'did:method:deadbeef:abcd1234:5c5c/def#frag', null, 'method', [ 'deadbeef', 'abcd1234', '5c5c' ], '/def', 'frag' ],
     ];
   }
 }
